@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}REGISTER PAGE{% endblock %}
+
+{% block content %}
+<h1>
+    REGISTER
+</h1>
+
+<form action="register" method="post">
+
+    <p>Name:</p><input type="text" placeholder="Name" name="name">
+    <p>Email:</p><input type="email"  placeholder="E-mail" name="email">
+    <p>Password:</p><input type="password" placeholder="Password" name="password"><br>
+    <input type="submit" value="SIGN-UP">
+
+    <a href="login">LOGIN</a>
+
+</form>
+
+{% if errorReg %}
+<p style="color: red;">{{errorReg}}</p>
+{% endif %}
+
+{% if errorMissingValuesReg %}
+<p style="color: red;">{{errorMissingValuesReg}}</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}HOME PAGE{% endblock %}
+
+{% block content %}
+<h1>
+    Home Page
+</h1>
+
+<p><b>Name:</b>{{user.name}}</p>
+<p><b>Email:</b>{{user.email}}</p>
+
+<button><a href="{{url_for('logout')}}">lOGOUT</a></button>
+
+
+
+{% endblock %}
