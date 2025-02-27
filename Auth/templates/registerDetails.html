@@ -7,7 +7,7 @@
 <h3>Student Registration Details</h3>
 <h4>Fill your details to make your work easier</h4>
 
-<form action="/submit" method="POST">
+<form action="/submit" method="POST" enctype="multipart/form-data">
     <p>Email:</p>
     <input type="email" placeholder="Personal Email" name="email" required>
     
@@ -28,14 +28,34 @@
     <p>XIIᵗʰ Marks:</p>
     <input type="number" placeholder="12ᵗʰ Marks" name="XII" required>
 
+    <p>Location:</p>
+    <input type="text" placeholder="" name="XII" required>
+
     <p>Note: multiply CGPA with 10 to get percentage.</p><br>
 
     <p>University:</p>
-    <input type="radio" id="chandigarh" name="university" value="Chandigarh University" required>
-    <label for="chandigarh">Chandigarh University</label><br>
+    <select name="university" required>
+        <option value="" disabled selected>Select your university</option>
+        <option value="Chandigarh University">Chandigarh University</option>
+        <option value="CGC Landran">CGC Landran</option>
+    </select>
     
-    <input type="radio" id="cgc" name="university" value="CGC Landran" required>
-    <label for="cgc">CGC Landran</label><br>
+
+    <p>Select Your Zone:</p>
+    <select name="zone" required>
+        <option value="" disabled selected>Select a zone</option>
+        <option value="North India">North India</option>
+        <option value="South India">South India</option>
+        <option value="East India">East India</option>
+        <option value="West India">West India</option>
+        <option value="Central India">Central India</option>
+        <option value="Northeast India">Northeast India</option>
+    </select>
+
+
+    <p>Upload File:</p>
+    <input type="file" name="file" required><br>
+
 
     <input type="submit" value="Submit">
 </form>
