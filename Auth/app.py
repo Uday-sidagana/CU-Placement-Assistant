@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 import re
+import os
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./testdb.db'
@@ -70,8 +71,21 @@ def registerDetails():
         return render_template('registerDetails.html')
     
     if request.method == 'POST':
-        pass
+        name = request.form.get('name')
+        email = request.form.get('email')
+        uid = request.form.get('uid')
+        umail = request.form.get('umail')
+        x = request.form.get('x')
+        xii = request.form.get('xii')
+        university = request.form.get('university')
+        zone = request.form.get('zone')
+        file = request.form.get('file')
 
+
+        if file:
+            filename = f"{uid}"  # Rename file with UID
+            file_path = os.path.join('/Users/macbookair/Desktop/python/CU PLACEMENT ASSISTANT/Auth/uploads', filename)
+            file.save(file_path) 
 
 
 @app.route('/login', methods=["POST", "GET"])
