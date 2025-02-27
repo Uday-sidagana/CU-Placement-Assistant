@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}regDetails{% endblock %}
+
+{% block content %}
+
+<h3>Student Registration Details</h3>
+<h4>Fill your details to make your work easier</h4>
+
+<form action="{{url_for('registerDetails')}}" method="post">
+
+    <p>Email:</p><input type="email" placeholder="Personal Email" name="email">
+    <p>Full Name:</p><input type="text" placeholder="Name" name="name">
+    <p>UID:</p><input type="text" placeholder="University Roll.no" name="uid">
+    <p>University Mail:</p><input type="email" placeholder="University Mail" name="umail">
+    <p>Xᵗʰ Marks:</p><input type="number" placeholder="10ᵗʰ Marks" name="X">
+    <p>Note: If GPA, multiply the grade with 9.5 i.e. 10GPA will be 10x9.5= 95. And don't put '%' symbol at the end</p><br>
+    <p>XIIᵗʰ Marks:</p><input type="number" placeholder="12ᵗʰ Marks" name="XII">
+    <p>Note: multiply CGPA with 10 to get percentage.</p><br>
+    <p>University:</p><input type="dropdown">
+    <label>Select Your University:</label><br>
+  
+  <input type="radio" id="chandigarh" name="university" value="Chandigarh University">
+  <label for="chandigarh">Chandigarh University</label><br>
+  
+  <input type="radio" id="cgc" name="university" value="CGC Landran">
+  <label for="cgc">CGC Landran</label><br>
+
+  <input type="submit" value="Submit">
+
+
+
+
+</form>
+
+{% endblock %}
