@@ -121,7 +121,9 @@ def registerDetails():
             filename = f"{uid}.pdf"  # Rename file with UID
             file_data = file.read()  # Read file data BEFORE saving
             file_path = os.path.join('/Users/macbookair/Desktop/python/CU PLACEMENT ASSISTANT/Auth/uploads', filename)
-          
+            
+            with open(file_path, 'wb') as f:
+                f.write(file_data)
 
         user_details = UserDetails(
             uid=uid,
