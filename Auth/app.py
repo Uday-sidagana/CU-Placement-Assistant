@@ -8,6 +8,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./testdb.db'
 db = SQLAlchemy(app)
 app.secret_key = 'secret_key'
+
 class User(db.Model):
     __tablename__='users'
 
@@ -24,8 +25,38 @@ class User(db.Model):
     def checkPassword(self, password):
         return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
     
+class UserDetails(db.Model):
+    __tablename__ = 'user_details'
+
+    id = db.Column(db.Integer, primary_key=True)
+    uid = db.Column(db.Integer, db.ForeignKey('users.uid'), nullable=False)  # Link to `users` table
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    umail = db.Column(db.String(100), unique=True)
+    x = db.Column(db.String(10))
+    xii = db.Column(db.String(10))
+    university = db.Column(db.String(100))
+    zone = db.Column(db.String(50))
+    file_path = db.Column(db.String(255))  # Store uploaded file path
+
+    user = db.relationship('User', backref=db.backref('details', lazy=True))  # Relationship with `User`
+
+    def __init__(self, uid, name, email, umail, x, xii, university, zone, file_path):
+        self.uid = uid
+        self.name = name
+        self.email = email
+        self.umail = umail
+        self.x = x
+        self.xii = xii
+        self.university = university
+        self.zone = zone
+        self.file_path = file_path
+
+    
 with app.app_context():
     db.create_all()
+
+
 
 
 
@@ -53,7 +84,7 @@ def register():
                 new_user= User(email=email, name=name,  password=password)
                 db.session.add(new_user)
                 db.session.commit()
-                return redirect(url_for('login')) 
+                return redirect(url_for('registerDetails')) 
             else:
                 return render_template('register.html', errorReg=
                                     "Password must be at least 6 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@, $, !, %, *, ?, &).")
@@ -73,19 +104,40 @@ def registerDetails():
     if request.method == 'POST':
         name = request.form.get('name')
         email = request.form.get('email')
-        uid = request.form.get('uid')
+        uid = request.form.get('uid').strip()
         umail = request.form.get('umail')
         x = request.form.get('x')
         xii = request.form.get('xii')
         university = request.form.get('university')
         zone = request.form.get('zone')
-        file = request.form.get('file')
+        file = request.files.get('file')
+
+        #UID duplication error resolve
+        existing_user = UserDetails.query.filter_by(uid=uid).first()
+        if existing_user:
+            return "UID already registered", 400
 
 
         if file:
-            filename = f"{uid}"  # Rename file with UID
+            filename = f"{uid}.pdf"  # Rename file with UID
             file_path = os.path.join('/Users/macbookair/Desktop/python/CU PLACEMENT ASSISTANT/Auth/uploads', filename)
             file.save(file_path) 
+
+        user_details = UserDetails(
+            uid=uid,
+            name=name,
+            email=email,
+            umail=umail,
+            x=x,
+            xii=xii,
+            university=university,
+            zone=zone,
+            file_path=file_path
+        )
+        db.session.add(user_details)
+        db.session.commit()
+
+        return redirect(url_for('homepage'))
 
 
 @app.route('/login', methods=["POST", "GET"])
