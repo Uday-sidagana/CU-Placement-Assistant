@@ -117,11 +117,12 @@ def registerDetails():
         if existing_user:
             return "UID already registered", 400
 
-
+        file_data = None
         if file:
             filename = f"{uid}.pdf"  # Rename file with UID
             file_path = os.path.join('/Users/macbookair/Desktop/python/CU PLACEMENT ASSISTANT/Auth/uploads', filename)
             file.save(file_path) 
+            file_data = file.read()
 
         user_details = UserDetails(
             uid=uid,
@@ -132,7 +133,7 @@ def registerDetails():
             xii=xii,
             university=university,
             zone=zone,
-            file=file
+            file_data=file
         )
         db.session.add(user_details)
         db.session.commit()
