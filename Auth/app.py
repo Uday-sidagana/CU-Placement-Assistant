@@ -37,11 +37,11 @@ class UserDetails(db.Model):
     xii = db.Column(db.String(10))
     university = db.Column(db.String(100))
     zone = db.Column(db.String(50))
-    file_path = db.Column(db.String(255))  # Store uploaded file path
+    file_data = db.Column(db.LargeBinary)  # Store uploaded file path
 
     user = db.relationship('User', backref=db.backref('details', lazy=True))  # Relationship with `User`
 
-    def __init__(self, uid, name, email, umail, x, xii, university, zone, file_path):
+    def __init__(self, uid, name, email, umail, x, xii, university, zone, file_data):
         self.uid = uid
         self.name = name
         self.email = email
@@ -50,7 +50,7 @@ class UserDetails(db.Model):
         self.xii = xii
         self.university = university
         self.zone = zone
-        self.file_path = file_path
+        self.file_data = file_data
 
     
 with app.app_context():
@@ -132,12 +132,12 @@ def registerDetails():
             xii=xii,
             university=university,
             zone=zone,
-            file_path=file_path
+            file=file
         )
         db.session.add(user_details)
         db.session.commit()
 
-        return redirect(url_for('homepage'))
+        return redirect(url_for('login'))
 
 
 @app.route('/login', methods=["POST", "GET"])
