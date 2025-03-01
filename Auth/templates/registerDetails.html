@@ -20,6 +20,12 @@
     <p>University Mail:</p>
     <input type="email" placeholder="University Mail" name="umail" required>
 
+    <p>Contact Number:</p>
+    <input type="text" placeholder="Phone Number" name="ph.no" required>
+
+    <p>Alternate Contact Number:</p>
+    <input type="text" placeholder="Alt Ph.no" name="altph.no" required>
+
     <p>Xᵗʰ Marks:</p>
     <input type="number" placeholder="10ᵗʰ Marks" name="x" required>
 
@@ -56,9 +62,11 @@
 <input type="text" name="other_backlogs" placeholder="Specify if Other" style="display:none;">
 
 
+    <p>Current State(Location):</p>
 
+        <input type="text" placeholder="Enter State" name="currentState">
 
-    <p>Select Your Zone:</p>
+    <p>Preferred Job Location(Zone):</p>
     <select name="zone" required>
         <option value="" disabled selected>Select a zone</option>
         <option value="North India">North India</option>
@@ -83,12 +91,12 @@
 
 
 <script>
-    document.querySelector("select[name='backlogs']").addEventListener("change", function() {
-        let otherInput = document.querySelector("input[name='other_backlogs']");
-        otherInput.style.display = this.value === "other" ? "block" : "none";
-    });
-    </script>
-    
+document.querySelector("select[name='backlogs']").addEventListener("change", function() {
+    let otherInput = document.querySelector("input[name='other_backlogs']");
+    otherInput.style.display = this.value === "other" ? "block" : "none";
+});
+</script>
+
 
 {% endblock %}
 
