@@ -113,6 +113,9 @@ def registerDetails():
         email = request.form.get('email')
         uid = request.form.get('uid').strip()
         umail = request.form.get('umail')
+        phNo = request.form.get('phNo')
+        altphNo = request.form.get('altphNo')
+        currentState = request.form.get('currentState')
         x = request.form.get('x')
         xii = request.form.get('xii')
         university = request.form.get('university')
@@ -137,6 +140,9 @@ def registerDetails():
             name=name,
             email=email,
             umail=umail,
+            phNo= phNo,
+            altphNo= altphNo,
+            currentState= currentState,
             x=x,
             xii=xii,
             university=university,
