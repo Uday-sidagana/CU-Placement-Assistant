@@ -196,6 +196,7 @@ def event():
         pass
      
     if request.method =='POST':
+        pass
 
     
 
