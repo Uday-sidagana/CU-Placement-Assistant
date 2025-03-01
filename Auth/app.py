@@ -45,7 +45,7 @@ class UserDetails(db.Model):
 
     user = db.relationship('User', backref=db.backref('details', lazy=True))  # Relationship with `User`
 
-    def __init__(self, uid, name, email, umail, x, xii, university, zone, file_data, phNo, altphNo, currentState):
+    def __init__(self, uid, name, email, umail, x, xii, university, zone, file_data, phNo, altphNo, currentState, backlogs):
         self.uid = uid
         self.name = name
         self.email = email
@@ -53,6 +53,7 @@ class UserDetails(db.Model):
         self.phNo = phNo
         self.altphNo = altphNo
         self.currentState = currentState
+        self.backlogs = backlogs
         self.x = x
         self.xii = xii
         self.university = university
@@ -116,6 +117,7 @@ def registerDetails():
         phNo = request.form.get('phNo')
         altphNo = request.form.get('altphNo')
         currentState = request.form.get('currentState')
+        backlogs = request.form.get('backlogs')
         x = request.form.get('x')
         xii = request.form.get('xii')
         university = request.form.get('university')
@@ -126,6 +128,9 @@ def registerDetails():
         existing_user = UserDetails.query.filter_by(uid=uid).first()
         if existing_user:
             return "UID already registered", 400
+        
+        if backlogs == "other":
+            backlogs = request.form.get("otherbacklogs")
 
         if file:
             filename = f"{uid}.pdf"  # Rename file with UID
@@ -143,11 +148,13 @@ def registerDetails():
             phNo= phNo,
             altphNo= altphNo,
             currentState= currentState,
+            backlogs=backlogs,
             x=x,
             xii=xii,
             university=university,
             zone=zone,
             file_data=file_data
+            
         )
         db.session.add(user_details)
         db.session.commit()

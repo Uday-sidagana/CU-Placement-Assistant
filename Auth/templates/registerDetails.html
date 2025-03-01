@@ -59,7 +59,7 @@
     <option>8</option>
     <option value="other">Other (Please Specify)</option>
 </select>
-<input type="text" name="other_backlogs" placeholder="Specify if Other" style="display:none;">
+<input type="text" name="otherbacklogs" placeholder="Specify if Other" style="display:none;">
 
 
     <p>Current State(Location):</p>
@@ -92,7 +92,7 @@
 
 <script>
 document.querySelector("select[name='backlogs']").addEventListener("change", function() {
-    let otherInput = document.querySelector("input[name='other_backlogs']");
+    let otherInput = document.querySelector("input[name='otherbacklogs']");
     otherInput.style.display = this.value === "other" ? "block" : "none";
 });
 </script>
