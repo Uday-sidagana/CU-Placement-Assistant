@@ -81,3 +81,32 @@
 <a href="{{url_for('login')}}">Skip</a>
 
 {% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let backlogsDropdown = document.getElementById("backlogs");
+    let otherInput = document.getElementById("other_backlogs");
+
+    backlogsDropdown.addEventListener("change", function() {
+        if (this.value === "other") {
+            otherInput.style.display = "block";
+        } else {
+            otherInput.style.display = "none";
+            otherInput.value = ""; // Clear input if not needed
+        }
+    });
+});
+
+function validateForm() {
+    let backlogsDropdown = document.getElementById("backlogs").value;
+    let otherInput = document.getElementById("other_backlogs").value.trim();
+
+    if (backlogsDropdown === "other" && otherInput === "") {
+        alert("Please specify the number of backlogs.");
+        return false;
+    }
+    return true;
+}
+</script>
+{% endblock %}
