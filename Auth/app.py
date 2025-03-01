@@ -33,8 +33,8 @@ class UserDetails(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     umail = db.Column(db.String(100), unique=True)
-    phNo = db.Coulmn(db.String(12))
-    altphNo = db.Column(db.String(12))
+    phNo = db.Column(db.String(10))
+    altphNo = db.Column(db.String(10))
     backlogs = db.Column(db.String(100))
     currentState = db.Column(db.String(100))
     x = db.Column(db.String(10))
@@ -45,14 +45,14 @@ class UserDetails(db.Model):
 
     user = db.relationship('User', backref=db.backref('details', lazy=True))  # Relationship with `User`
 
-    def __init__(self, uid, name, email, umail, x, xii, university, zone, file_data, phNo, altphNo, curentState):
+    def __init__(self, uid, name, email, umail, x, xii, university, zone, file_data, phNo, altphNo, currentState):
         self.uid = uid
         self.name = name
         self.email = email
         self.umail = umail
         self.phNo = phNo
         self.altphNo = altphNo
-        self.currentState = curentState
+        self.currentState = currentState
         self.x = x
         self.xii = xii
         self.university = university
