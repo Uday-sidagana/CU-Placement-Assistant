@@ -45,11 +45,14 @@ class UserDetails(db.Model):
 
     user = db.relationship('User', backref=db.backref('details', lazy=True))  # Relationship with `User`
 
-    def __init__(self, uid, name, email, umail, x, xii, university, zone, file_data):
+    def __init__(self, uid, name, email, umail, x, xii, university, zone, file_data, phNo, altphNo, curentState):
         self.uid = uid
         self.name = name
         self.email = email
         self.umail = umail
+        self.phNo = phNo
+        self.altphNo = altphNo
+        self.currentState = curentState
         self.x = x
         self.xii = xii
         self.university = university
