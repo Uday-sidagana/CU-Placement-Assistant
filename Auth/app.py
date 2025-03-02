@@ -3,6 +3,15 @@ from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 import re
 import os
+from io import BytesIO
+from PyPDF2 import PdfReader
+import google.generativeai as genai
+from dotenv import load_dotenv
+
+load_dotenv()
+GEMINI_API = os.getenv('GEMINI_API')
+
+
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./testdb.db'
@@ -42,10 +51,11 @@ class UserDetails(db.Model):
     university = db.Column(db.String(100))
     zone = db.Column(db.String(50))
     file_data = db.Column(db.LargeBinary)  # Store uploaded file path
+    student_description = db.Column(db.Text)
 
     user = db.relationship('User', backref=db.backref('details', lazy=True))  # Relationship with `User`
 
-    def __init__(self, uid, name, email, umail, x, xii, university, zone, file_data, phNo, altphNo, currentState, backlogs):
+    def __init__(self, uid, name, email, umail, x, xii, university, zone, file_data, phNo, altphNo, currentState, backlogs, student_description):
         self.uid = uid
         self.name = name
         self.email = email
@@ -59,6 +69,7 @@ class UserDetails(db.Model):
         self.university = university
         self.zone = zone
         self.file_data = file_data
+        self.student_description = student_description
 
     
 with app.app_context():
@@ -66,6 +77,37 @@ with app.app_context():
 
 
 
+def aiParser(pdf_binary_data):
+
+    pdf_stream = BytesIO(pdf_binary_data)
+    pdf_reader= PdfReader(pdf_stream)
+
+    pdf_text=""
+    for page in pdf_reader.pages:
+        text = page.extract_text()
+
+        if text:
+            pdf_text += text+"\n"
+   # Prepare and send request
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API}"
+    payload = {
+        "contents": [
+            {
+                "parts": [
+                    {"text": f"Analyze the following text and create a structured description:\n\n{pdf_text}"}
+                ]
+            }
+        ]
+    }
+
+    response = requests.post(url, json=payload)
+    response_data = response.json()
+
+    return response_data["candidates"][0]["content"]["parts"][0]["text"]
+
+    
+
+    
 
 
 @app.route('/')
@@ -123,6 +165,7 @@ def registerDetails():
         university = request.form.get('university')
         zone = request.form.get('zone')
         file = request.files.get('file')
+        
 
         #UID duplication error resolve
         existing_user = UserDetails.query.filter_by(uid=uid).first()
@@ -140,6 +183,13 @@ def registerDetails():
             with open(file_path, 'wb') as f:
                 f.write(file_data)
 
+            #AI ka time ho gya student information lene ka 
+            
+            pdf_binary_data = file_data 
+
+            student_description = aiParser(pdf_binary_data)
+
+
         user_details = UserDetails(
             uid=uid,
             name=name,
@@ -153,11 +203,14 @@ def registerDetails():
             xii=xii,
             university=university,
             zone=zone,
-            file_data=file_data
+            file_data=file_data,
+            student_description=student_description
             
         )
         db.session.add(user_details)
         db.session.commit()
+
+
 
         return redirect(url_for('login'))
 
