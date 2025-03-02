@@ -260,16 +260,39 @@ def event():
         pass
 
 
-@app.route('/studentDetails')
+@app.route('/studentDetails', methods=['GET','POST'])
 def studentDetails():
     
+    
+    if 'email' not in session:
+        return redirect(url_for('login'))  # Ensure user is logged in
 
-    if session['name']:
-        user = User.query.filter_by(email=session['email']).first()
-        userDetails = UserDetails.query.filter_by(email=session['email']).first()
+    userDetails = UserDetails.query.filter_by(email=session['email']).first()
 
-        return render_template('studentDetails.html', user = user, userDetails= userDetails)
+    if not userDetails:
+        return "User details not found", 404
 
+    if request.method == 'POST':
+        # Update only fields that were submitted (i.e., not empty)
+        if 'name' in request.form and request.form['name'].strip():
+            userDetails.name = request.form['name'].strip()
+
+        if 'umail' in request.form and request.form['umail'].strip():
+            userDetails.umail = request.form['umail'].strip()
+
+        if 'phNo' in request.form and request.form['phNo'].strip():
+            userDetails.phNo = request.form['phNo'].strip()
+
+        if 'altphNo' in request.form and request.form['altphNo'].strip():
+            userDetails.altphNo = request.form['altphNo'].strip()
+
+        if 'backlogs' in request.form and request.form['backlogs'].strip():
+            userDetails.backlogs = request.form['backlogs'].strip()
+
+        db.session.commit()  # Save changes to DB
+        return redirect(url_for('studentDetails'))  # Redirect to refresh page
+
+    return render_template('studentDetails.html', userDetails=userDetails)
 
     
 
