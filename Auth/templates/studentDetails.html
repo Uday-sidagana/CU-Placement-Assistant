@@ -3,7 +3,55 @@
 {% block title %}Student Details{% endblock %}
 
 {% block content %}
+<h3>Student Details</h3>
 
+<form id="editForm" method="POST">
+    <p><b>Name:</b> <span id="nameText">{{ userDetails.name }}</span>
+        <input type="text" name="name" id="nameInput" value="{{ userDetails.name }}" style="display: none;">
+    </p>
+    <p><b>Email:</b> {{ userDetails.email }}</p>  <!-- Email should not be editable -->
 
+    <p><b>University Mail:</b> <span id="umailText">{{ userDetails.umail }}</span>
+        <input type="text" name="umail" id="umailInput" value="{{ userDetails.umail }}" style="display: none;">
+    </p>
+
+    <p><b>Phone:</b> <span id="phNoText">{{ userDetails.phNo }}</span>
+        <input type="text" name="phNo" id="phNoInput" value="{{ userDetails.phNo }}" style="display: none;">
+    </p>
+
+    <p><b>Alternative Phone:</b> <span id="altphNoText">{{ userDetails.altphNo }}</span>
+        <input type="text" name="altphNo" id="altphNoInput" value="{{ userDetails.altphNo }}" style="display: none;">
+    </p>
+
+    <p><b>Backlogs:</b> <span id="backlogsText">{{ userDetails.backlogs }}</span>
+        <input type="text" name="backlogs" id="backlogsInput" value="{{ userDetails.backlogs }}" style="display: none;">
+    </p>
+
+    <button type="button" id="editButton">Edit</button>
+    <button type="submit" id="saveButton" style="display: none;">Save</button>
+</form>
+
+<script>
+    document.getElementById("editButton").addEventListener("click", function() {
+        // Hide text spans and show input fields
+        document.getElementById("nameText").style.display = "none";
+        document.getElementById("nameInput").style.display = "inline-block";
+
+        document.getElementById("umailText").style.display = "none";
+        document.getElementById("umailInput").style.display = "inline-block";
+
+        document.getElementById("phNoText").style.display = "none";
+        document.getElementById("phNoInput").style.display = "inline-block";
+
+        document.getElementById("altphNoText").style.display = "none";
+        document.getElementById("altphNoInput").style.display = "inline-block";
+
+        document.getElementById("backlogsText").style.display = "none";
+        document.getElementById("backlogsInput").style.display = "inline-block";
+
+        // Hide Edit button and show Save button
+        document.getElementById("editButton").style.display = "none";
+        document.getElementById("saveButton").style.display = "inline-block";
+    });
+</script>
 {% endblock %}
-

@@ -259,6 +259,18 @@ def event():
     if request.method =='POST':
         pass
 
+
+@app.route('/studentDetails')
+def studentDetails():
+    
+
+    if session['name']:
+        user = User.query.filter_by(email=session['email']).first()
+        userDetails = UserDetails.query.filter_by(email=session['email']).first()
+
+        return render_template('studentDetails.html', user = user, userDetails= userDetails)
+
+
     
 
     
