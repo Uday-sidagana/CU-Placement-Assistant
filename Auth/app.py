@@ -7,6 +7,7 @@ from io import BytesIO
 from PyPDF2 import PdfReader
 import google.generativeai as genai
 from dotenv import load_dotenv
+import requests
 
 load_dotenv()
 GEMINI_API = os.getenv('GEMINI_API')
