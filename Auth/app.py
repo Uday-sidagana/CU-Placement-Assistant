@@ -265,7 +265,7 @@ def studentDetails():
     
     
     if 'email' not in session:
-        return redirect(url_for('login'))  # Ensure user is logged in
+        return redirect(url_for('login'))  
 
     userDetails = UserDetails.query.filter_by(email=session['email']).first()
 
@@ -273,7 +273,6 @@ def studentDetails():
         return "User details not found", 404
 
     if request.method == 'POST':
-        # Update only fields that were submitted (i.e., not empty)
         if 'name' in request.form and request.form['name'].strip():
             userDetails.name = request.form['name'].strip()
 
@@ -289,8 +288,8 @@ def studentDetails():
         if 'backlogs' in request.form and request.form['backlogs'].strip():
             userDetails.backlogs = request.form['backlogs'].strip()
 
-        db.session.commit()  # Save changes to DB
-        return redirect(url_for('studentDetails'))  # Redirect to refresh page
+        db.session.commit()  
+        return redirect(url_for('studentDetails'))  
 
     return render_template('studentDetails.html', userDetails=userDetails)
 
