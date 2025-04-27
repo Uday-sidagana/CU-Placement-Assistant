@@ -90,17 +90,17 @@ class UserDetails(db.Model):
         self.student_description = student_description
 
 
-class EventDetails(db.Model):
-    __tablename__='event_details'
+# class EventDetails(db.Model):
+#     __tablename__='event_details'
 
-    id = db.Column(db.Integer, primary_key=True)
-    start = db.Column(db.String(50), nullable=False)   # better as string/datetime
-    title = db.Column(db.String(100), nullable=False)
+#     id = db.Column(db.Integer, primary_key=True)
+#     start = db.Column(db.String(50), nullable=False)   # better as string/datetime
+#     title = db.Column(db.String(100), nullable=False)
     
 
-    def __init__(self, start, title):
-        self.start = start
-        self.title = title
+#     def __init__(self, start, title):
+#         self.start = start
+#         self.title = title
         
 
     
@@ -477,18 +477,18 @@ def get_events():
     placements_events = get_upcoming_placements_events()
     print(placements_events)
 
-    for i in placements_events:
-        start = i['start']
-        title = i['title']
+    # for i in placements_events:
+    #     start = i['start']
+    #     title = i['title']
 
 
-        event_details = EventDetails(
-                start=start,
-                title=title,
+    #     event_details = EventDetails(
+    #             start=start,
+    #             title=title,
     
-            )
-        db.session.add(event_details)
-        db.session.commit()
+    #         )
+    #     db.session.add(event_details)
+    #     db.session.commit()
 
 
 
@@ -501,6 +501,8 @@ def get_events():
     if os.path.exists('eventcred.json'):
         os.remove('eventcred.json')
         print("Deleted eventcred.json")
+
+    # events = EventDetails.query.all()
 
 
     return render_template('homepage.html', events=placements_events, user=user)

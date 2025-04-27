@@ -30,7 +30,7 @@
     <button type="submit">Event Schedule</button>
 </form>
 
-<button id="myEventsBtn"><a href="{{url_for('get_events')}}">My Events</a></button>
+<button id="myEventsBtn">My Events</button>
 
 <a href="{{url_for('studentDetails')}}">Student Details</a>
 
@@ -73,7 +73,8 @@
         if (eventsContainer.style.display === "none") {
             eventsContainer.style.display = "block";
         }
-    });
+       
+     });
 </script>
 
 {% endblock %}
