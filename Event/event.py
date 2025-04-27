@@ -5,6 +5,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 import requests
+from google.auth.transport.requests import Request
 
 # Scopes for accessing calendar
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -15,11 +16,11 @@ def authenticate_google_api():
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(requests.Request())
+            creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
                 'credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
+            creds = flow.run_local_server(port=8080)
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
     return build('calendar', 'v3', credentials=creds)
@@ -30,11 +31,11 @@ def schedule_event(service, title, description, date, start_time, end_time):
         'description': description,
         'start': {
             'dateTime': f'{date}T{start_time}:00',
-            'timeZone': 'Asia/Kolkata',
+            'timeZone': 'UTC',
         },
         'end': {
             'dateTime': f'{date}T{end_time}:00',
-            'timeZone': 'Asia/Kolkata',
+            'timeZone': 'UTC',
         },
     }
     event = service.events().insert(calendarId='primary', body=event).execute()
