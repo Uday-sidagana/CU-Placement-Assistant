@@ -11,7 +11,28 @@
 <p><b>Email:</b>{{user.email}}</p>
 
 
-<a href="{{url_for('event')}}">Event Schedule</a>
+<form action="{{ url_for('calendar') }}" method="POST" style="display:none;">
+    <label for="title">Event Title:</label>
+    <input type="text" id="title" name="title" required><br>
+
+    <label for="description">Event Description:</label>
+    <textarea id="description" name="description" required></textarea><br>
+
+    <label for="date">Event Date (YYYY-MM-DD):</label>
+    <input type="date" id="date" name="date" required><br>
+
+    <label for="start_time">Start Time (HH:MM):</label>
+    <input type="time" id="start_time" name="start_time" required><br>
+
+    <label for="end_time">End Time (HH:MM):</label>
+    <input type="time" id="end_time" name="end_time" required><br>
+
+    <button type="submit">Event Schedule</button>
+</form>
+
+
+
+
 <a href="{{url_for('studentDetails')}}">Student Details</a>
 
 <button><a href="{{url_for('logout')}}">lOGOUT</a></button>
