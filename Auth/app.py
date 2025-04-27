@@ -21,6 +21,7 @@ from googleapiclient.discovery import build
 import requests
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
+import socket
 
 
 
@@ -260,20 +261,18 @@ def logout():
 
 @app.route('/homepage')
 def homepage():
+    print("Homepage route accessed") 
     if session['name']:
         user = User.query.filter_by(email=session['email']).first()
 
-        return render_template('homepage.html', user= user)
+        placements_events = session.get('placements_events', [])
+        print("Retrieved placements events from session:", placements_events)  
+
+        return render_template('homepage.html', user= user, events=placements_events)
+    
     
 
 
-@app.route('/event', methods=['GET', 'POST'])
-def event():
-    if request.method == 'GET':
-        pass
-     
-    if request.method =='POST':
-        pass
 
 
 @app.route('/studentDetails', methods=['GET','POST'])
@@ -310,54 +309,159 @@ def studentDetails():
     return render_template('studentDetails.html', userDetails=userDetails)
 
 
-# @app.route('/calendar', methods=['GET','POSt'])
-# def event_schedule():
-#     SCOPES = ['https://www.googleapis.com/auth/calendar']
+@app.route('/calendar', methods=['GET','POSt'])
+def event_schedule():
 
-#     def authenticate_google_api():
-#         creds = None
-#         if os.path.exists('token.json'):
-#             creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-#         if not creds or not creds.valid:
-#             if creds and creds.expired and creds.refresh_token:
-#                 creds.refresh(Request())
-#             else:
-#                 flow = InstalledAppFlow.from_client_secrets_file(
-#                     'credentials.json', SCOPES)
-#                 creds = flow.run_local_server(port=8080)
-#             with open('token.json', 'w') as token:
-#                 token.write(creds.to_json())
-#         return build('calendar', 'v3', credentials=creds)
+    if request.method== 'POST':
+        SCOPES = ['https://www.googleapis.com/auth/calendar']
 
-#     def schedule_event(service, title, description, date, start_time, end_time):
-#         event = {
-#             'summary': title,
-#             'description': description,
-#             'start': {
-#                 'dateTime': f'{date}T{start_time}:00',
-#                 'timeZone': 'UTC',
-#             },
-#             'end': {
-#                 'dateTime': f'{date}T{end_time}:00',
-#                 'timeZone': 'UTC',
-#             },
-#         }
-#         event = service.events().insert(calendarId='primary', body=event).execute()
-#         print(f"Event created: {event.get('htmlLink')}")
 
-#     def main():
-#         service = authenticate_google_api()
+        def is_port_in_use(port):
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                return s.connect_ex(('127.0.0.1', port)) == 0
 
-#         title = input("Enter Event Title: ")
-#         description = input("Enter Event Description: ")
-#         date = input("Enter Event Date (YYYY-MM-DD): ")
-#         start_time = input("Enter Start Time (HH:MM in 24hr): ")
-#         end_time = input("Enter End Time (HH:MM in 24hr): ")
+        def authenticate_google_api():
+            creds = None
+            if os.path.exists('token.json'):
+                creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+            if not creds or not creds.valid:
+                if creds and creds.expired and creds.refresh_token:
+                    creds.refresh(Request())
+                else:
 
-#         schedule_event(service, title, description, date, start_time, end_time)
+                    if is_port_in_use(8080):
+                        print("Port 8080 is in use, attempting cleanup...")
+                        os.system("lsof -t -i:8080 | xargs kill -9")
 
-#     if __name__ == '__main__':
-#         main()
+                    flow = InstalledAppFlow.from_client_secrets_file(
+                        'credentials.json', SCOPES)
+                    creds = flow.run_local_server(port=8080)
+                with open('token.json', 'w') as token:
+                    token.write(creds.to_json())
+            return build('calendar', 'v3', credentials=creds)
+
+        def schedule_event(service, title, description, date, start_time, end_time):
+            event = {
+                'summary': title,
+                'description': description,
+                'start': {
+                    'dateTime': f'{date}T{start_time}:00',
+                    'timeZone': 'UTC',
+                },
+                'end': {
+                    'dateTime': f'{date}T{end_time}:00',
+                    'timeZone': 'UTC',
+                },
+            }
+            event = service.events().insert(calendarId='primary', body=event).execute()
+            print(f"Event created: {event.get('htmlLink')}")
+
+        
+        service = authenticate_google_api()
+
+        title = f"Placement:{request.form.get('title')}"
+        description = request.form.get('description')
+        date = request.form.get('date')
+        start_time = request.form.get('start_time')
+        end_time = request.form.get('end_time')
+
+        schedule_event(service, title, description, date, start_time, end_time)
+
+        
+
+        if os.path.exists('token.json'):
+            os.remove('token.json')
+            print("token.json has been deleted.")
+
+        return redirect(url_for('homepage'))
+    
+   
+
+
+
+
+@app.route('/get_events')
+def get_events():
+    SCOPES = ['https://www.googleapis.com/auth/calendar']
+
+    def is_port_in_use(port):
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                return s.connect_ex(('127.0.0.1', port)) == 0
+
+    def authenticate_google_api():
+        creds = None
+        if os.path.exists('token.json'):
+            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        if not creds or not creds.valid:
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+            else:
+
+                if is_port_in_use(8080):
+                    print("Port 8080 is in use, attempting cleanup...")
+                    os.system("lsof -t -i:8080 | xargs kill -9")
+
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    'credentials.json', SCOPES)
+                creds = flow.run_local_server(port=8080)
+            with open('token.json', 'w') as token:
+                token.write(creds.to_json())
+        return build('calendar', 'v3', credentials=creds)
+
+# Function to get all events from today up to 3 months later, filtering by title containing "Placements:"
+    def get_upcoming_placements_events():
+        service = authenticate_google_api()
+
+        # Get the current date and the date 3 months later
+        now = datetime.datetime.utcnow().replace(microsecond=0).isoformat() + 'Z'
+        three_months_later = (datetime.datetime.utcnow() + datetime.timedelta(days=90)).replace(microsecond=0).isoformat() + 'Z'
+
+
+        events_result = service.events().list(
+            calendarId='primary', 
+            timeMin=now, 
+            timeMax=three_months_later, 
+            maxResults=2500,  # Adjust as necessary
+            singleEvents=True,
+            orderBy='startTime'
+        ).execute()
+
+        events = events_result.get('items', [])
+
+        # List to store events with 'Placements:' in the title
+        placements_events = []
+
+        if not events:
+            print('No upcoming events found.')
+        else:
+            for event in events:
+                start = event['start'].get('dateTime', event['start'].get('date'))
+                if isinstance(start, str):
+                    start = datetime.datetime.fromisoformat(start.rstrip('Z'))  # Remove 'Z' before parsing
+                summary = event['summary']
+                
+                # Check if the event title contains "Placements:"
+                if "placement:" in summary.lower():
+                    placements_events.append({
+                        'start': start.strftime('%Y-%m-%d %H:%M:%S UTC'),  # Display time in UTC format
+                        'title': summary
+                    })
+
+        return placements_events
+
+    
+    placements_events = get_upcoming_placements_events()
+
+    if session['name']:
+        user = User.query.filter_by(email=session['email']).first()
+
+    session['placements_events'] = placements_events
+
+    return render_template('homepage.html', events=placements_events, user=user)
+
+
+
+
     
 
     

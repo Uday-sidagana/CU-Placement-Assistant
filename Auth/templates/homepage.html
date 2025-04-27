@@ -10,8 +10,8 @@
 <p><b>Name:</b>{{user.name}}</p>
 <p><b>Email:</b>{{user.email}}</p>
 
-
-<form action="{{ url_for('calendar') }}" method="POST" style="display:none;">
+<button id="eventScheduleBtn">Event Schedule</button>
+<form id="eventScheduleForm" action="{{ url_for('event_schedule') }}" method="POST" style="display:none;">
     <label for="title">Event Title:</label>
     <input type="text" id="title" name="title" required><br>
 
@@ -30,13 +30,55 @@
     <button type="submit">Event Schedule</button>
 </form>
 
-
-
+<button id="myEventsBtn"><a href="{{url_for('get_events')}}">My Events</a></button>
 
 <a href="{{url_for('studentDetails')}}">Student Details</a>
 
-<button><a href="{{url_for('logout')}}">lOGOUT</a></button>
+<button><a href="{{url_for('logout')}}">LOGOUT</a></button>
 
+<div id="eventsContainer" style="display:none;">
+    <h2>Your Upcoming Placement Events</h2>
+    <ul id="eventsList">
+        {% if events %}
+            {% for event in events %}
+                <li>
+                    <strong>{{ event.title }}</strong><br>
+                    <em>{{ event.start }}</em>
+                </li>
+            {% endfor %}
+        {% else %}
+            <p>No upcoming placement events found.</p>
+        {% endif %}
+    </ul>
+</div>
 
+<script>
+    // JavaScript to handle event schedule button and dynamically show form
+    document.getElementById("eventScheduleBtn").addEventListener("click", function(event_schedule) {
+        event.preventDefault();  // Prevent the form from submitting immediately
+
+        const userConfirmed = confirm("Do you want to schedule an event?");
+
+        if (userConfirmed) {
+            // Show the event schedule form dynamically
+            document.getElementById("eventScheduleForm").style.display = "block";
+        }
+    });
+
+    document.getElementById("myEventsBtn").addEventListener("click", function(event) {
+    // Prevent the default action (if it's part of a form or anchor link that causes a reload)
+    event.preventDefault();
+    
+    // Toggle visibility of the events container
+    const eventsContainer = document.getElementById("eventsContainer");
+
+    // If events are hidden, show them; otherwise, hide them
+    if (eventsContainer.style.display === "none" || eventsContainer.style.display === "") {
+        eventsContainer.style.display = "block";
+    } else {
+        eventsContainer.style.display = "none";
+    }
+});
+</script>
 
 {% endblock %}
