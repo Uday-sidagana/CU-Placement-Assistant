@@ -9,7 +9,21 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 import requests
 
+#Events Libraries
+from __future__ import print_function
+import datetime
+import os.path
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+import requests
+from google.auth.transport.requests import Request
+from google_auth_oauthlib.flow import InstalledAppFlow
+
+
+
 load_dotenv()
+credentials_path = os.getenv('GOOGLE_CREDENTIALS_PATH')
 GEMINI_API = os.getenv('GEMINI_API')
 
 
