@@ -89,6 +89,20 @@ class UserDetails(db.Model):
         self.file_data = file_data
         self.student_description = student_description
 
+
+class EventDetails(db.Model):
+    __tablename__='event_details'
+
+    id = db.Column(db.Integer, primary_key=True)
+    start = db.Column(db.String(50), nullable=False)   # better as string/datetime
+    title = db.Column(db.String(100), nullable=False)
+    
+
+    def __init__(self, start, title):
+        self.start = start
+        self.title = title
+        
+
     
 with app.app_context():
     db.create_all()
@@ -385,26 +399,36 @@ def get_events():
     SCOPES = ['https://www.googleapis.com/auth/calendar']
 
     def is_port_in_use(port):
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                return s.connect_ex(('127.0.0.1', port)) == 0
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            return s.connect_ex(('127.0.0.1', port)) == 0
+
+    def cleanup_port(port):
+        while is_port_in_use(port):
+            print(f"Port {port} is in use. Attempting cleanup...")
+            result = os.popen(f"lsof -t -i:{port}").read()
+            if result:
+                pids = result.strip().split('\n')
+                print(f"Found PIDs: {pids}")
+                for pid in pids:
+                    os.system(f"kill -9 {pid}")
+                print("Processes killed. Waiting for port release...")
+                time.sleep(1)
+            else:
+                break
+        print(f"Port {port} is now free.")
 
     def authenticate_google_api():
         creds = None
-        if os.path.exists('token.json'):
-            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        if os.path.exists('eventcred.json'):
+            creds = Credentials.from_authorized_user_file('eventcred.json', SCOPES)
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())
             else:
-
-                if is_port_in_use(8080):
-                    print("Port 8080 is in use, attempting cleanup...")
-                    os.system("lsof -t -i:8080 | xargs kill -9")
-
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    'credentials.json', SCOPES)
-                creds = flow.run_local_server(port=8080)
-            with open('token.json', 'w') as token:
+                cleanup_port(8081)
+                flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+                creds = flow.run_local_server(port=8081)
+            with open('eventcred.json', 'w') as token:
                 token.write(creds.to_json())
         return build('calendar', 'v3', credentials=creds)
 
@@ -451,11 +475,33 @@ def get_events():
 
     
     placements_events = get_upcoming_placements_events()
+    print(placements_events)
+
+    for i in placements_events:
+        start = i['start']
+        title = i['title']
+
+
+        event_details = EventDetails(
+                start=start,
+                title=title,
+    
+            )
+        db.session.add(event_details)
+        db.session.commit()
+
+
+
 
     if session['name']:
         user = User.query.filter_by(email=session['email']).first()
 
     session['placements_events'] = placements_events
+
+    if os.path.exists('eventcred.json'):
+        os.remove('eventcred.json')
+        print("Deleted eventcred.json")
+
 
     return render_template('homepage.html', events=placements_events, user=user)
 
